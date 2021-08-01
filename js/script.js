@@ -7,32 +7,42 @@ var urls = ['https://raw.githubusercontent.com/FlaviusBelisarius/MyDictionary/ma
 'https://raw.githubusercontent.com/FlaviusBelisarius/MyDictionary/master/data/7.json',
 'https://raw.githubusercontent.com/FlaviusBelisarius/MyDictionary/master/data/8.json'];
 
-var map = {};
+let myMap1 = new Map();
+var allWord = 0;
 
 window.onload = function initializeHashing(){
     console.log('Data Received');
+    var wordCount = 0;
+
     Promise.all(urls.map(url =>
         fetch(url).then(response => {return response.json()})
     )).then(jsons => {
         for(var i of jsons){
             for(var j of i){
-                map[j.word.toLowerCase()] = j;
+                allWord++;
+                myMap1.set(j.word.toLowerCase(), j);
+                if(!j && !j.word){
+                    wordCount++;
+                }
+                // map1[j.word.toLowerCase()] = j;
             }
         }
     });
 }
 
 function search(){
+    console.log('Valid word: '+myMap1.size);
+    console.log('all word: '+allWord);
     var input = document.getElementById('query');
     var word = input.value.toLowerCase();
     var output = document.getElementById('output');
     try{
-        if(map[word] == null){
+        if(myMap1.get(word) == null){
             throw 'Word Not Found';
         }else{
-            output.innerHTML = "中文释义: "+map[word].translation+'<br>'+
-                               "英文释义: "+map[word].definition+'<br>'+
-                               "音标: "+map[word].phonetic
+            output.innerHTML = "中文释义: "+myMap1.get(word).translation+'<br>'+
+                               "英文释义: "+myMap1.get(word).definition+'<br>'+
+                               "音标: "+myMap1.get(word).phonetic
                                ;
         }
     }catch(err){
